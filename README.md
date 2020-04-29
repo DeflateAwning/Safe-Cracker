@@ -11,14 +11,16 @@ On a whim, I bought a Sentry Safe on Kijiji for cheap, without the combination. 
 
 ## 3D Printed Components
 There are 3 printed components:
-* Handle (SafeHandleGrip.stl)
-	* **Source:** Sparkfun Repository
-	* **Measured Dimensions:** 38mm x 118.5mm
-	* Dimensions match the file, using as is for now.
-* Handle Pulley (NautilusPulley.stl)
-	* **Source:** Sparkfun Repository
-* Dial (DialGrip.stl)
-	* **Source:** Personal OpenSCAD Design
-	* OD of Dial on Safe: \~79mm
-	* Has 12 notches around the outside
-	* Designed my own grip for it, supporting M5 bolts
+### Handle (SafeHandleGrip.stl)
+* **Source:** Sparkfun Repository
+* **Measured Dimensions:** 38mm x 118.5mm
+* Dimensions match the file, using as is for now.
+
+### Handle Pulley (NautilusPulley.stl)
+* **Source:** Sparkfun Repository
+
+### Dial (DialGrip.stl)
+* **Source:** Personal OpenSCAD Design
+* OD of Dial on Safe: \~79mm
+* Has 12 notches around the outside
+* Designed my own grip for it, supporting M5 bolts
