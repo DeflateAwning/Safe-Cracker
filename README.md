@@ -11,6 +11,7 @@ On a whim, I bought a Sentry Safe on Kijiji for cheap, without the combination. 
 
 ## 3D Printed Components
 There are 3 printed components:
+
 ### Handle (SafeHandleGrip.stl)
 * **Source:** Sparkfun Repository
 * **Measured Dimensions:** 38mm x 118.5mm
@@ -24,3 +25,29 @@ There are 3 printed components:
 * OD of Dial on Safe: \~79mm
 * Has 12 notches around the outside
 * Designed my own grip for it, supporting M5 bolts
+
+### Aluminum Extrusion Mounts/Brackets
+* Several 90-degree brackets for joining the extrusions together
+* Two motor mounts for mounting the NEMA17 steppers to the extrusions.
+
+## Electronics
+* The electronics of this system will employ the [GRBL CNC Shield v3.00](https://blog.protoneer.co.nz/arduino-cnc-shield/) for the Arduino Uno (note that the GRBL firmware is not used). 
+	* X Axis -> Dial
+		* Dial Step Pin: D2
+		* Dial Direction Pin: D5
+	* Y Axis -> Handle
+		* Handle Step Pin: D3
+		* Handle Direction Pin: D6
+* A 12v ATX PSU is used for power into the GRBL CNC Shield.
+* A 1602 LCD screen may be used, but may not be. To be confirmed if communication will be primarily over Serial or not.
+* The system will detect when unlocking was successful by one of two methods (TBD):
+	1. Use a current sensor on the handle stepper motor (Y Axis). Easier mechnically, more difficult in electronics/firmware.
+	2. Use a limit switch-type SPST switch to detect when the handle has moved. More difficult mechanically, easier in electronics/firmware. Far less creative.
+
+## Hardware Design
+* 2020 and 2040 aluminum extrusions will be used as the main frame, not because they are good, nor because they are cheap, but rather because it is April 2020 and we're all in quarantine, and it's all I have from dismantling an old CNC laser engraver.
+* Various 3D printed components will be used.
+* Both stepper motors are **NEMA17** steppers.
+
+## Firmware Design
+* The firmware will be losely based off the 
