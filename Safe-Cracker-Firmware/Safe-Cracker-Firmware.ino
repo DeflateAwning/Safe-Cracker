@@ -35,8 +35,11 @@ void setup() {
 	// Set the stepper config, pinmodes
 	setupSteppers();
 
-	// Perform initial setup
-	doHardwareTest(); // tests functionality of the entire system
+	// Test functionality of each system component/control function
+	doHardwareTest();
+
+	// Instruct the user to set the safe to a known state
+	doSetupInstructions();
 }
 
 /**
@@ -110,9 +113,30 @@ void doHardwareTest() {
 }
 
 /**
+Instructs the user to set the dial stepper to a known state, and to set the handle tension. Waits for the switch to trigger to begin.
+*/
+void doSetupInstructions() {
+	// disable steppers
+	setStepperEnable(false);
+
+	Serial.println("The steppers are now disabled. Turn the dial to face to zero, and ensure the handle trigger is setup. Then, press the switch.");
+	while (! readSafeOpen()) {} // wait until button is pressed
+	Serial.println("Safe dial position is now set to 0.");
+	delay(2000); // debounce the button, in case they're holding it
+
+	// enable steppers
+	setStepperEnable(true);
+}
+
+
+
+
+
+
+
+/**
 Checks if the safe can be unlocked right now. Spins the handle for a while, and then rests if no success.
 This function intentionally skips steps in an effort to pull hard on the handle.
-
 @return True if the safe can be unlocked right now, false if not
 */
 bool checkSafeOpenHandle() {
@@ -122,7 +146,7 @@ bool checkSafeOpenHandle() {
 	// "zero" the stepper after it skipped some steps
 	handleStepper.setCurrentPosition(0);
 
-	if (digitalRead(PIN_OPEN_SENSOR) == 0) {
+	if (readSafeOpen()) {
 		// sensor has been triggered, safe is open
 		return true;
 	}
@@ -160,4 +184,5 @@ void setStepperEnable(bool state) {
 void loop() {
 	// This part should never be reached.
 	Serial.println("Reached loop part, weird.");
+	delay(1000);
 }
