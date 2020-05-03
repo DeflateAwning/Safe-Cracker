@@ -2,8 +2,9 @@
 On a whim, I bought a Sentry Safe on Kijiji for cheap, without the combination. This system uses stepper motors to crack it.
 
 ## Acknowledgement
-* This project is heavily based off the [sparkfunX project](https://github.com/sparkfunX/Safe_Cracker). The 3D printed components are nearly a direct copy.
-	* Licensing Information of the sparkfunX project: https://github.com/sparkfunX/Safe_Cracker/blob/master/LICENSE.md
+* This project is heavily based off the [sparkfunX project](https://github.com/sparkfunX/Safe_Cracker). Many of the 3D printed components are nearly a direct copy.
+	* Licensing Information of the sparkfunX project: https://github.com/sparkfunX/Safe_Cracker/blob/master/LICENSE.md (MIT License)
+* A 2040 Extrusion Angle Bracket was used from [Thingiverse.com](https://www.thingiverse.com/thing:3610780)
 
 ## Disclaimer
 * This project was built to crack open an empty safe that was sold to me for cheap, because the owner forgot the combination.
