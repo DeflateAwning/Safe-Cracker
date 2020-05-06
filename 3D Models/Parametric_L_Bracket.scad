@@ -3,17 +3,17 @@
 // Released under the Creative Commons - Attribution license.
 
 // Screw clearance hole diameter (mm)
-screwHoleDiameter = 3.4;
+screwHoleDiameter = 4.2;
 // Screw clearance hole counterbore diameter (mm)
-screwHoleCounterboreDiameter = 6.5;
+screwHoleCounterboreDiameter = 7.5;
 // Screw clearance hole counterbore depth (mm)
-screwHoleCounterboreDepth = 3;
+screwHoleCounterboreDepth = 0.1;
 // Number of screw holes on side 1 (length dimension)
 side1Holes = 2;
 // Spacing of screw holes on side 1 (mm)
 side1HoleSpacing = 20;
 // Spacing between corner axis and first screw hole on side 1 (mm)
-side1HoleOffset = 12;
+side1HoleOffset = 16;
 // Number of screw holes on side 2 (length dimension)
 side2Holes = 2;
 // Spacing of screw holes on side 2 (mm)
@@ -25,9 +25,9 @@ widthHoles = 2; // 1 for 2020, 2 for 2040
 // Width of bracket (per hole on width axis) (mm)
 widthHoleSpacing = 20;
 // Margin around holes on width and length axes (mm)
-holeMargin = 6;
+holeMargin = 7;
 // Thickness of the bracket (mm)
-thickness = 5;
+thickness = 7;
 // Fillet radius (mm)
 filletRadius = 5;
 // Fillet the corner axis?
