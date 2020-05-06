@@ -8,14 +8,14 @@ pointerT = 10;
 notchCount = 12;
 
 notchDBig = 3.5;
-notchDSmall = 2.5;
+notchDSmall = 2.8; // orig 2.5
 
 wallT = 2.5; // thickness of walls
-botT = 3;
+botT = 5.5 + 1.2; // orig 3mm
 
-holeD = 5; // NEMA17 shaft diameter=5mm
-nutW = 8;
-nutSink = botT/2;
+holeD = 5.1; // NEMA17 shaft diameter=5mm
+nutW = 10; // orig 8 for M5 bolt
+nutSink = botT-1.2; // orig: 1.5mm
 
 $fa = 0.5;
 $fs = 0.5;
@@ -28,7 +28,8 @@ module MakeDialGrip() {
             // Main Grip
             cylinder(d = dialOD + 2*wallT, h=botT + dialH);
             
-            // Make dial pointer
+            // Make dial pointer (doesn't necessarily align with 0 though)
+            rotate([0, 0, 180/notchCount])
             translate([0, dialOD/2-1, 0]) linear_extrude(pointerT) polygon([[0, pointerL], [-pointerW/2, 0], [pointerW/2, 0]]);
             
         }

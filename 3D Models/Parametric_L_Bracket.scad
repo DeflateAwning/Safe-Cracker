@@ -11,7 +11,7 @@ screwHoleCounterboreDepth = 3;
 // Number of screw holes on side 1 (length dimension)
 side1Holes = 2;
 // Spacing of screw holes on side 1 (mm)
-side1HoleSpacing = 10;
+side1HoleSpacing = 20;
 // Spacing between corner axis and first screw hole on side 1 (mm)
 side1HoleOffset = 12;
 // Number of screw holes on side 2 (length dimension)
@@ -21,9 +21,9 @@ side2HoleSpacing = 10;
 // Spacing between corner axis and first screw hole on side 2 (mm)
 side2HoleOffset = 12;
 // Number of screw holes in width direction (essentially extends the bracket along the corner axis)
-widthHoles = 2;
+widthHoles = 2; // 1 for 2020, 2 for 2040
 // Width of bracket (per hole on width axis) (mm)
-widthHoleSpacing = 10;
+widthHoleSpacing = 20;
 // Margin around holes on width and length axes (mm)
 holeMargin = 6;
 // Thickness of the bracket (mm)
@@ -43,7 +43,7 @@ gussetSize = 18;
 // Gusset thickness (mm)
 gussetThickness = 2;
 // Number of segments used to make circular shapes
-circleRes = 20;
+circleRes = 40;
 
 length = (side1Holes - 1) * side1HoleSpacing + side1HoleOffset + holeMargin;
 width = holeMargin * 2 + widthHoleSpacing * (widthHoles - 1);
