@@ -21,7 +21,7 @@
 
 // this needs to be set correctly/tested
 #define stepsPerRev_dial (200*8) // 1/8 microstepping
-#define stepsPerRev_handle (200*1) // no microstepping (higher torque)
+#define stepsPerRev_handle (200*8) // 1/8 microstepping (use no microstepping for higher torque)
 
 // Construct the Stepper Controllers
 AccelStepper dialStepper(AccelStepper::DRIVER, PIN_DIAL_STEP, PIN_DIAL_DIR);
@@ -56,11 +56,11 @@ void setupSteppers() {
 
 	// Set stepper settings
 	dialStepper.setMaxSpeed(stepsPerRev_dial*3); // in steps/second, set to 3 rev/second
-	dialStepper.setAcceleration(100.0);
+	dialStepper.setAcceleration(1000.0);
 	dialStepper.setSpeed(dialStepper.maxSpeed() - 1);
 
-	handleStepper.setMaxSpeed(200.0);
-	handleStepper.setAcceleration(100.0);
+	handleStepper.setMaxSpeed(stepsPerRev_handle);
+	handleStepper.setAcceleration(1000.0);
 	handleStepper.setSpeed(handleStepper.maxSpeed() - 1);
 }
 
@@ -87,12 +87,13 @@ void doHardwareTest() {
 	// Test that the input switch works
 	Serial.println("The input switch will be tested 10 times in 10 seconds. Try triggering it and seeing results.");
 	for (int i = 0; i < 10; i++) {
-		if (checkSafeOpenHandle()) {
-			Serial.print("Open | ");
+		if (readSafeOpen()) {
+			Serial.print("Safe Opened | ");
 		}
 		else {
-			Serial.print("Closed | ");
+			Serial.print("Safe Closed | ");
 		}
+		delay(1000);
 	}
 	Serial.println("\n");
 
@@ -107,7 +108,8 @@ void doHardwareTest() {
 		else {
 			Serial.println("\tSafe handle not opened. Safe still locked.");
 		}
-		Serial.print("\tHandle Open Attempt took "); Serial.print(millis()-startTime); Serial.println("ms");
+		Serial.print("\tHandle Open Attempt took "); Serial.print(millis()-startTime); Serial.println("ms, waiting 3s now.");
+		delay(3000);
 	}
 	Serial.println();
 }
@@ -162,7 +164,6 @@ Reads the safe open switch.
 @return true if it is triggered (safe open), false if not triggered (safe still closed)
 */
 bool readSafeOpen() {
-	// digitalRead: true = untriggered = safe closed
 	return (! digitalRead(PIN_OPEN_SENSOR));
 }
 
@@ -173,7 +174,7 @@ Sets the stepper motors' enable to ON or OFF, deciding whether to provide power 
 @param state true to turn on, false to turn off
 */
 void setStepperEnable(bool state) {
-	digitalWrite(PIN_STEPPER_ENABLE, state);
+	digitalWrite(PIN_STEPPER_ENABLE, !state);
 }
 
 
