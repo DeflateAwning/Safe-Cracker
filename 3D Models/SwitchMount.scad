@@ -15,6 +15,7 @@ switchL = 10; // length of switch (parallel to leads)
 
 bumpYPos = (mountW - switchL/2) * 0.55; // position of highest part of bump underneath this thing
 bumpH = 4; // height of the bump underneath
+enableBump = false;
 
 $fa = 0.1;
 $fs = 0.3;
@@ -39,7 +40,7 @@ module MakeSwitchMount() {
         }
         
         // Remove the goofy bump
-        hull() { // looking in the positive x direction...
+        if (enableBump) hull() { // looking in the positive x direction...
             translate([0, -switchL/2, 0]) rotate([0, 90, 0]) cylinder(d=0.1, h=1000); // BR corner
             translate([0, bumpYPos, bumpH]) rotate([0, 90, 0]) cylinder(d=0.1, h=1000); // top
             translate([0, mountW-switchL/2, 0]) rotate([0, 90, 0]) cylinder(d=0.1, h=1000); // BL
