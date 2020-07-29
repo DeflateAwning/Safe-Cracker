@@ -19,13 +19,23 @@
 // Other Pins
 #define PIN_STEPPER_ENABLE 8
 
-// this needs to be set correctly/tested
+// Stepper/Driver Configuration
 #define stepsPerRev_dial (200*8) // 1/8 microstepping
-#define stepsPerRev_handle (200*8) // 1/8 microstepping (use no microstepping for higher torque)
+#define stepsPerRev_handle (200*1) // 1/8 microstepping (use no microstepping for higher torque)
+#define maxStepsPerSec_dial (stepsPerRev_dial * 0.25)
+
+// CW and CCW Direction Constants (feed into dir arguments)
+#define CW  1
+#define CCW 0
 
 // Construct the Stepper Controllers
 AccelStepper dialStepper(AccelStepper::DRIVER, PIN_DIAL_STEP, PIN_DIAL_DIR);
 AccelStepper handleStepper(AccelStepper::DRIVER, PIN_HANDLE_STEP, PIN_HANDLE_DIR);
+
+int currentPosDigit = 0;
+const int maxPosDigit = 100; // highest digit it goes to
+
+const int stepsPerDigit = stepsPerRev_dial / maxPosDigit;
 
 void setup() {
 	// Begin serial communication
@@ -55,11 +65,11 @@ void setupSteppers() {
 	pinMode(PIN_OPEN_SENSOR, INPUT_PULLUP);
 
 	// Set stepper settings
-	dialStepper.setMaxSpeed(stepsPerRev_dial*3); // in steps/second, set to 3 rev/second
-	dialStepper.setAcceleration(1000.0);
+	dialStepper.setMaxSpeed(maxStepsPerSec_dial); // in steps/second, set to 3 rev/second
+	dialStepper.setAcceleration(1e6);
 	dialStepper.setSpeed(dialStepper.maxSpeed() - 1);
 
-	handleStepper.setMaxSpeed(stepsPerRev_handle);
+	handleStepper.setMaxSpeed(stepsPerRev_handle * 0.5);
 	handleStepper.setAcceleration(1000.0);
 	handleStepper.setSpeed(handleStepper.maxSpeed() - 1);
 }
@@ -75,14 +85,16 @@ void doHardwareTest() {
 	Serial.println();
 	
 	// Test that the dial driver works
-	Serial.println("The dial will spin two full circles clockwise, wait a second, then spin back.");
-	dialStepper.runToNewPosition(stepsPerRev_dial * 2);
-	Serial.println("\t2 circles done.");
-	delay(1000);
-	dialStepper.runToNewPosition(0);
-	Serial.println("\tSpin back done.");
-	delay(1000);
-	Serial.println();
+	Serial.println("The dial will spin two full circles clockwise, wait a second, then spin back, then repeat.");
+	for (int i = 0; i < 2; i++) {
+		dialStepper.runToNewPosition(stepsPerRev_dial * 2);
+		Serial.println("\t2 circles CW done.");
+		delay(1000);
+		dialStepper.runToNewPosition(0);
+		Serial.println("\tSpin back CCW done.");
+		delay(1000);
+		Serial.println();
+	}
 
 	// Test that the input switch works
 	Serial.println("The input switch will be tested 10 times in 10 seconds. Try triggering it and seeing results.");
@@ -130,12 +142,6 @@ void doSetupInstructions() {
 	setStepperEnable(true);
 }
 
-
-
-
-
-
-
 /**
 Checks if the safe can be unlocked right now. Spins the handle for a while, and then rests if no success.
 This function intentionally skips steps in an effort to pull hard on the handle.
@@ -177,6 +183,18 @@ void setStepperEnable(bool state) {
 	digitalWrite(PIN_STEPPER_ENABLE, !state);
 }
 
+/**
+Turns the dial to a specific position (a certain number), out of 100 possible numbers.
+Updates currentPosDigit global.
+
+@param dir CW or CCW macro constant
+*/
+void dial_turnToPosition(int targetDigit, int dir) {
+	int numOfDigitsToMove = targetDigit - currentPosDigit;
+
+
+
+}
 
 
 
