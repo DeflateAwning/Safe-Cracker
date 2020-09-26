@@ -1,32 +1,8 @@
 
-// LICENSE INFORMATION
 
 
-#include <AccelStepper.h>
+#include "main.h"
 
-// ********** Pin Definitions **********
-// Dial -> X Axis on GRBL Board
-#define PIN_DIAL_STEP 2
-#define PIN_DIAL_DIR  5
-
-// Handle -> Y Axis on GRBL Board
-#define PIN_HANDLE_STEP 3
-#define PIN_HANDLE_DIR  6
-
-// Handle Open Sensor -> X Axis Limit Switch on GRBL Board
-#define PIN_OPEN_SENSOR 9
-
-// Other Pins
-#define PIN_STEPPER_ENABLE 8
-
-// Stepper/Driver Configuration
-#define stepsPerRev_dial (200*8) // 1/8 microstepping
-#define stepsPerRev_handle (200*1) // 1/8 microstepping (use no microstepping for higher torque)
-#define maxStepsPerSec_dial (stepsPerRev_dial * 0.25)
-
-// CW and CCW Direction Constants (feed into dir arguments)
-#define CW  1
-#define CCW 0
 
 // Construct the Stepper Controllers
 AccelStepper dialStepper(AccelStepper::DRIVER, PIN_DIAL_STEP, PIN_DIAL_DIR);
@@ -86,7 +62,7 @@ void doHardwareTest() {
 	
 	// Test that the dial driver works
 	Serial.println("The dial will spin two full circles clockwise, wait a second, then spin back, then repeat.");
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 1; i++) {
 		dialStepper.runToNewPosition(stepsPerRev_dial * 2);
 		Serial.println("\t2 circles CW done.");
 		delay(1000);
@@ -100,10 +76,10 @@ void doHardwareTest() {
 	Serial.println("The input switch will be tested 10 times in 10 seconds. Try triggering it and seeing results.");
 	for (int i = 0; i < 10; i++) {
 		if (readSafeOpen()) {
-			Serial.print("Safe Opened | ");
+			Serial.print("Safe Unlocked | ");
 		}
 		else {
-			Serial.print("Safe Closed | ");
+			Serial.print("Safe Locked | ");
 		}
 		delay(1000);
 	}
