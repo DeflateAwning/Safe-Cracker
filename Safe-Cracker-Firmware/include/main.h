@@ -18,6 +18,9 @@ bool checkSafeOpenHandle();
 bool readSafeOpen();
 void setStepperEnable(bool state);
 void dial_turnToPosition(int targetDigit, int dir);
+void spinToDigit(int fullSpinCount, int spinToDigit, int dir);
 
+
+void runStepperUntilDone(AccelStepper targetStepperMotor);
 
 #endif

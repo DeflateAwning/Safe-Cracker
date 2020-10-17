@@ -2,6 +2,9 @@
 #ifndef PINS_PROJECT_H
 #define PINS_PROJECT_H
 
+#include "main.h"
+
+
 // ********** Pin Definitions **********
 // Dial -> X Axis on GRBL Board
 #define PIN_DIAL_STEP 2
@@ -20,15 +23,33 @@
 // Stepper/Driver Configuration
 #define stepsPerRev_dial (200*8) // 1/8 microstepping
 #define stepsPerRev_handle (200*8) // 1/8 microstepping (use no microstepping for higher torque)
-#define maxStepsPerSec_dial (stepsPerRev_dial * 2) // sets the speed for the dial (multiplier is the RPM, basically)
+#define maxStepsPerSec_dial (stepsPerRev_dial * 0.25)
 
 // CW and CCW Direction Constants (feed into dir arguments) -> For Dial Only
-#define CW  -1
-#define CCW  1
+#define CW  0
+#define CCW 1
 
 
-#define NUM_DIGITS 100
-const uint16_t stepsPerDigit = stepsPerRev_dial / NUM_DIGITS;
+/*
+ * Original pins from the SF project.
+ */
+//Pin definitions
+const byte encoderA = 2;
+const byte encoderB = 3;
+const byte photo = 5;
+const byte motorPWM = 6;
+const byte button = 7;
+const byte motorReset = 8;
+const byte servo = 9;
+const byte motorDIR = 10;
+const byte buzzer = 11;
+const byte LED = 13;
+
+const byte currentSense = A0;
+const byte servoPositionButton = A1;
+const byte displayLatch = A2;
+const byte displayClock = A3;
+const byte displayData = A4;
 
 
 #endif
