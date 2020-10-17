@@ -4,16 +4,26 @@
 safeThickness = 15; // thickness of edge part
 safeDepth = 9.4; // depth of edge part
 
-// Motor Config
-//motorW = 42 + 0.5; // real width
-motorW = 38; // width of middle part, for savings
-motorHoleSpace = 31;
-motorHoleD = 3.2; // screw holes
-motorBigHoleD = 25;
+// Motor Config: NEMA 17 (v1)
+//motorW = 38; // width of middle part/hub, for savings (42.5mm is the real width)
+motorHoleSpace17 = 31;
+motorHoleD17 = 3.2; // screw holes
+//motorBigHoleD = 25;
 
-topT = 4;
 
-baseToMotor = 92; // distance from safe top to motor plate
+// Motor Config: NEMA 23 (v2)
+motorW = 50; // width of middle part/hub, for savings (42.5mm is the real width)
+motorHoleSpace23 = 47.14;
+motorHoleD23 = 5+0.1; // screw holes
+motorBigHoleD = 39;
+motorNutW23 = 8;
+motorNutT23 = 4.4 - 1.3;
+
+
+
+topT = 5.5; // v1: 4; thickness of the pillar-to-arms
+
+baseToMotor = 92+4; // v1: 92; distance from safe top to motor plate
 
 legD = 28;
 
@@ -56,9 +66,15 @@ module MakeHandleMotorMount() {
         
         
         
-        // Remove motor screw holes
-        for (x=[1, -1]) for (y=[1, -1]) translate([motorHoleSpace*x/2, motorHoleSpace*y/2, 0]) {
-            cylinder(d=motorHoleD, h=1000);
+        // Remove motor screw holes (NEMA 17)
+        for (x=[1, -1]) for (y=[1, -1]) translate([motorHoleSpace17*x/2, motorHoleSpace17*y/2, 0]) {
+            cylinder(d=motorHoleD17, h=1000);
+        }
+        
+        // Remove motor screw holes (NEMA 23)
+        for (x=[1, -1]) for (y=[1, -1]) translate([motorHoleSpace23*x/2, motorHoleSpace23*y/2, 0]) {
+            cylinder(d=motorHoleD23, h=1000);
+            cylinder(r=motorNutW23/sqrt(3), h=baseToMotor-topT+motorNutT23, $fn=6);
         }
         
         // Remove big middle hole

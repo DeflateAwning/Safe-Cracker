@@ -1,5 +1,5 @@
 dialOD = 79+0.5;
-dialH = 12; // CHECK
+dialH = 12;
 
 pointerL = 10;
 pointerW = 5;
@@ -8,14 +8,15 @@ pointerT = 10;
 notchCount = 12;
 
 notchDBig = 3.5;
-notchDSmall = 2.8; // orig 2.5
+notchDSmall = 2.8; // v1: 2.5
 
 wallT = 2.5; // thickness of walls
-botT = 5.5 + 1.2; // orig 3mm
+botT = 6; // v1: 3mm, v2: 5.5+1.2, v3: 
 
 holeD = 5.1; // NEMA17 shaft diameter=5mm
-nutW = 10; // orig 8 for M5 bolt
-nutSink = botT-1.2; // orig: 1.5mm
+nutW = 8.1; // v1: 8 (for M5 bolt), v2: 10, v3: 8.1
+nutSink = 4; // v1: boT-1.5mm, v2: botT-1.2, v3: 4 (M5 head thickness)
+
 
 $fa = 0.5;
 $fs = 0.5;
