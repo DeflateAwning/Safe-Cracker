@@ -28,7 +28,7 @@
 
 
 #define NUM_DIGITS 100
-const uint16_t stepsPerDigit = stepsPerRev_dial / NUM_DIGITS;
+const uint16_t stepsPerDigit = stepsPerRev_dial / NUM_DIGITS; // 16 steps per digit
 
 
 #endif

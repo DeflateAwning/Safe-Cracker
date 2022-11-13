@@ -3,6 +3,8 @@
 
 #include "main.h"
 
+const int comboIncrement = 2; // number of digits to increase the combination by each time
+const float handleTryFractionOfACircle = 1; // fraction of a circle to try to spin the handle motor to unlock
 
 // Construct the Stepper Controllers
 AccelStepper dialStepper(AccelStepper::DRIVER, PIN_DIAL_STEP, PIN_DIAL_DIR);
@@ -24,6 +26,9 @@ void setup() {
 
 	// Instruct the user to set the safe to a known state
 	doSetupInstructions();
+
+	// Do the cracking
+	doCracking();
 }
 
 /**
@@ -43,17 +48,17 @@ void setupSteppers() {
 	dialStepper.setAcceleration(maxStepsPerSec_dial*4);
 	dialStepper.setSpeed(dialStepper.maxSpeed() - 1);
 
-	handleStepper.setMaxSpeed(stepsPerRev_handle * 0.5);
-	handleStepper.setAcceleration(1000.0);
+	handleStepper.setMaxSpeed(stepsPerRev_handle * 1);
+	handleStepper.setAcceleration(stepsPerRev_handle * 4);
 	handleStepper.setSpeed(handleStepper.maxSpeed() - 1);
 }
 
 
 void doHardwareTest() {
-	bool enableTest_spinToDigit = true;
-	bool enableTest_spinFullCircles = true;
-	bool enableTest_printInputSwitch = true;
-	bool enableTest_testHandle = false;
+	bool enableTest_spinFullCircles        = true;
+	bool enableTest_spinToDigit            = false;
+	bool enableTest_printInputSwitch       = true;
+	bool enableTest_testHandle             = true;
 
 	Serial.println("Hardware test beginning.");
 
@@ -92,20 +97,24 @@ void doHardwareTest() {
 	if (enableTest_spinToDigit) {
 		Serial.println("Spinning to each digit, CW in 10s.");
 		for (int digit = 10; digit < 50; digit += 10) {
-			Serial.print("Spin to "); Serial.print(digit); Serial.print("CCW (short way) ...");
+			Serial.print("Spin to "); Serial.print(digit); Serial.print(" CCW (short way) ...");
 			spinToDigit(0, digit, CCW);
 			Serial.println("Done.");
 
-			delay(2000);
+			delay(5000);
 		}
+
+		// spin back to 0
+		spinToDigit(0, 0, CCW);
+		delay(5000);
 
 		Serial.println("Spinning to each digit, CW in 10s.");
 		for (int digit = 10; digit < 50; digit += 10) {
-			Serial.print("Spin to "); Serial.print(digit); Serial.print("CW (long way) ...");
+			Serial.print("Spin to "); Serial.print(digit); Serial.println(" CW (long way) ...");
 			spinToDigit(0, digit, CW);
 			Serial.println("Done.");
 
-			delay(2000);
+			delay(5000);
 		}
 	}
 	
@@ -165,13 +174,49 @@ void doSetupInstructions() {
 }
 
 /**
+ * Does the cracking.
+ */
+void doCracking() {
+	// enable steppers
+	setStepperEnable(true);
+
+	for (int digit1 = 0; digit1 < NUM_DIGITS; digit1 += comboIncrement)
+		for (int digit2 = 0; digit2 < NUM_DIGITS; digit2 += comboIncrement)
+			for (int digit3 = 0; digit3 < NUM_DIGITS; digit3 += comboIncrement) {
+				Serial.print("Trying combination: "); Serial.print(digit1); Serial.print("-"); Serial.print(digit2); Serial.print("-"); Serial.print(digit3);
+				Serial.print(" ... ");
+
+				// Actually try the digits
+				spinToDigit(4, digit1, CCW, false);
+				spinToDigit(3, digit2, CW, false);
+				spinToDigit(2, digit3, CCW, false);
+
+				if (checkSafeOpenHandle()) {
+					Serial.println("Handle opened!!");
+					Serial.println("You're excited, so write down the number the safe is currently on.");
+					Serial.print("The software thinks the safe is currently on: "); Serial.print(currentPosDigit);
+					Serial.println();
+
+					// Pause forever
+					while (1) {
+						delay(1000);
+					}
+				}
+				else {
+					// Handle didn't open this time
+					Serial.println("Shit, not again.");
+				}
+			}
+}
+
+/**
  * Checks if the safe can be unlocked right now. Spins the handle for a while, and then rests if no success.
  * This function intentionally skips steps in an effort to pull hard on the handle.
  * @return True if the safe can be unlocked right now, false if not
  */
 bool checkSafeOpenHandle() {
 	// Try to spin a half circle
-	handleStepper.runToNewPosition(stepsPerRev_handle/2);
+	handleStepper.runToNewPosition(stepsPerRev_handle * handleTryFractionOfACircle);
 
 	// "zero" the stepper after it skipped some steps
 	handleStepper.setCurrentPosition(0);
@@ -183,6 +228,10 @@ bool checkSafeOpenHandle() {
 
 	// Move back just a little (1/30 of a rev. = 12 degrees)
 	handleStepper.runToNewPosition(-stepsPerRev_handle/30);
+
+	setStepperEnable(false);
+	delay(200);
+	setStepperEnable(true);
 
 	return false;
 }
@@ -207,24 +256,37 @@ void setStepperEnable(bool state) {
 
 /**
  * Spin to a digit, with a certain number of spins in the middle.
+ * Debug output enabled by default.
  * @param fullSpinCount the number of full spins to do before going to the digit
  * @param targetDigit the digit to spin to
  * @param dir CW (1) or CCW (-1) macros
  */
 void spinToDigit(int fullSpinCount, int targetDigit, int dir) {
+	spinToDigit(fullSpinCount, targetDigit, dir, true);
+}
+
+/**
+ * Spin to a digit, with a certain number of spins in the middle.
+ * @param fullSpinCount the number of full spins to do before going to the digit
+ * @param targetDigit the digit to spin to
+ * @param dir CW (1) or CCW (-1) macros
+ * @param enableDebugOutput whether to print debug output
+ */
+void spinToDigit(int fullSpinCount, int targetDigit, int dir, bool enableDebugOutput) {
 	// Original Source: https://github.com/UMDIEEE/safecracker/blob/78b7601d9ec6db11d3e32d1c54b2aad3b520fb37/software/safecracker.ino#L33
 	
 	/**
 	 * Number of digits to move in the positive direction (CW).
 	 */
-	int delta;
+	signed long delta;
 
-	int numberOfDigitsToMove = targetDigit - currentPosDigit; // factored out of expression from source
+	signed long numberOfDigitsToMove = targetDigit - currentPosDigit; // factored out of expression from source
 
 	if (numberOfDigitsToMove >= 0) {
 		// moving to a digit "on the right", direct path is to spin CCW
 
 		if (dir == CCW) {
+			// ex: 
 			delta = numberOfDigitsToMove * dir;
 		}
 		else if (dir == CW) {
@@ -254,19 +316,35 @@ void spinToDigit(int fullSpinCount, int targetDigit, int dir) {
 
 	//dialStepper.move(delta*stepsPerDigit + dir*fullSpinCount*NUM_DIGITS*stepsPerDigit);
 	dialStepper.move(dir*fullSpinCount*stepsPerRev_dial + delta*stepsPerDigit);
-	Serial.print("Moving "); Serial.print(delta); Serial.print(" digits, plus "); Serial.print(fullSpinCount); Serial.print(" full spins...");
-	
+
+	if (enableDebugOutput) {
+		//Serial.print("Steps to move: "); Serial.print(dialStepper.distanceToGo()); Serial.println();
+		Serial.print("Moving "); Serial.print(delta); Serial.print(" digits ("); Serial.print(currentPosDigit); Serial.print("->"); Serial.print(targetDigit);
+		Serial.print(getDirString(dir)); Serial.print(") plus "); Serial.print(fullSpinCount); Serial.print(" full spins...");
+	}
+
 	runStepperUntilDone(dialStepper);
 
-	Serial.print("Moved to digit "); Serial.print(targetDigit); Serial.print(".");
-	Serial.println();
+	if (enableDebugOutput) {
+		Serial.print("Moved to digit "); Serial.print(targetDigit); Serial.print(".");
+		Serial.println();
+	}
 
 	// Store the current digit
 	currentPosDigit = targetDigit;
 }
 
 /**
- * Runs the stepper motor until at the desired position. Use after calling @code{stepperMotor.move(newPosition)}, for example.
+ * Returns a string of the direction, either "CW" or "CCW".
+ */
+String getDirString(int dir) {
+	if (dir == CW) return "CW";
+	else if (dir == CCW) return "CCW";
+	else return "??";
+}
+
+/**
+ * Runs the stepper motor until at the desired position. Use after calling stepperMotor.move(newPosition), for example.
  */
 void runStepperUntilDone(AccelStepper targetStepperMotor) {
 	while(targetStepperMotor.distanceToGo() != 0) {
